@@ -1,11 +1,29 @@
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, Default)]
+
 pub enum SlotState {
     P1,
     P2,
+    #[default]
     Empty
 }
 
-#[derive(Clone, Copy)]
+impl std::fmt::Display for SlotState {
+
+    fn fmt(&self, f : &mut std::fmt::Formatter) -> std::fmt::Result {
+
+        let result = match self {
+            SlotState::P1 => "Filled p1",
+            SlotState::P2 => "Filled p2",
+            SlotState::Empty => "Empty"
+        };
+
+        write!(f, "{}", result)
+        
+    }
+
+}
+
+#[derive(Clone, Copy, Debug, Default)]
 pub struct Slot {
 
     state : SlotState, // what the current state of the slot is
@@ -39,24 +57,20 @@ impl Slot {
 
     }
 
-    pub fn mark_slot(&mut self, new_state : SlotState) -> isize {
-
-        let mut to_ret = -1;
+    pub fn mark_slot(&mut self, new_state : SlotState) {
 
         match self.state {
-
-            SlotState::P1 => println!("Cannot mark an already marked slot!"),
-            SlotState::P2 => println!("Cannot mark an already marked slot!"),
+            SlotState::P1 | SlotState::P2 => {}, 
             SlotState::Empty => {
-                self.state = new_state;                                  
+                self.state = new_state;
                 self.life = 3;
-                to_ret = 0;
             }
 
         }
-        
-        to_ret 
+    }
 
+    pub fn get_state(&self) -> SlotState{
+        self.state
     }
 
     fn death(&mut self) {
