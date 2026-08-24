@@ -92,13 +92,37 @@ impl Board {
 
     fn calc_win(&mut self) {
 
-        // coudl do some cool match shit so ill wait   
+        // Slots carrying their point info would make this a lot simpler
 
-    // // print winnter
-    //     println!("{} wins!", self.curr_turn);
-    // // restart game
-    //     Self::reset(self);
+        let player_win = {
 
+            let mut x_vec = vec![];
+            let mut y_vec = vec![];
+
+            for (y, vec) in self.board.iter().enumerate() {
+                    for (x, slot) in vec.iter().enumerate() {
+                     if slot.get_state() == self.curr_turn.to_slotstate() {
+                        y_vec.push(x);
+                        x_vec.push(y);
+                    }
+                }
+            }
+
+            x_vec.sort_unstable();
+            y_vec.sort_unstable();
+
+            (x_vec[1] - x_vec[0]) == (x_vec[2] - x_vec[1]) && x_vec[0] != x_vec[2]
+                                            ||
+            (y_vec[1] - y_vec[0]) == (y_vec[2] - y_vec[1]) && y_vec[0] != y_vec[2]
+        };
+
+        if player_win {
+            println!("{} wins!", self.curr_turn);
+            Self::reset(self);
+        }
+   
     }
 
 }
+
+

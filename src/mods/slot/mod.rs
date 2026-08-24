@@ -1,4 +1,4 @@
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, PartialEq)]
 pub enum SlotState {
     P1,
     P2,
@@ -39,6 +39,10 @@ impl Slot {
 
     }
 
+    pub fn get_state(&self) -> SlotState {
+        self.state
+    }
+
     pub fn mark_slot(&mut self, new_state : SlotState) -> isize {
 
         let mut to_ret = -1;
@@ -49,7 +53,7 @@ impl Slot {
             SlotState::P2 => println!("Cannot mark an already marked slot!"),
             SlotState::Empty => {
                 self.state = new_state;                                  
-                self.life = 3;
+                self.life = 7;
                 to_ret = 0;
             }
 
