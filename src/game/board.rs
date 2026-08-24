@@ -129,12 +129,13 @@ impl Board {
     }
 
     pub fn mark_coords(&mut self, point : &Point) {
-        println!("{}, {}", point.to_tuple().1, point.to_tuple().0);
+        let new_state = self.curr_turn.to_slotstate();
 
-        println!("{}", self.curr_turn.to_slotstate());
+        let ret = self.at_point(point).mark_slot(new_state);
 
-        self.at_point(point).mark_slot(self.curr_turn.to_slotstate());
+        if ret {
         self.next_turn();
+        }
     }
 
     fn next_turn(&mut self) {
@@ -158,7 +159,7 @@ impl Board {
 
     }
 
-    pub fn get_slot_state(&self, point : &Point) -> SlotState {
+    pub fn get_slot_state(&mut self, point : &Point) -> SlotState {
         self.at_point(point).get_state()
     }
 
@@ -177,9 +178,9 @@ impl Board {
 
     }
 
-    fn at_point(&self, point : &Point) -> Slot {
+    fn at_point(&mut self, point: &Point) -> &mut Slot {    
         let (x, y) = point.to_tuple();
-        self.board[y][x]
+        &mut self.board[y][x]
     }
 
 }

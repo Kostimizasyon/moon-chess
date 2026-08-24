@@ -57,13 +57,14 @@ impl Slot {
 
     }
 
-    pub fn mark_slot(&mut self, new_state : SlotState) {
+    pub fn mark_slot(&mut self, new_state : SlotState) -> bool {
 
         match self.state {
-            SlotState::P1 | SlotState::P2 => {}, 
+            SlotState::P1 | SlotState::P2 => false, 
             SlotState::Empty => {
                 self.state = new_state;
                 self.life = 3;
+                true
             }
 
         }

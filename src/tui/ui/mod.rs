@@ -35,7 +35,7 @@ Move Count  : {}
         , area);
 }
 
-fn render_block(app: &App, point: Point, frame: &mut Frame, area: Rect) {
+fn render_block(app: &mut App, point: Point, frame: &mut Frame, area: Rect) {
     let is_focus = app.point.to_tuple() == point.to_tuple();
 
     let fg_color = if is_focus { Color::White } else { Color::Magenta };
@@ -59,7 +59,7 @@ fn render_block(app: &App, point: Point, frame: &mut Frame, area: Rect) {
 
 }
 
-fn render_grid(app: &App, frame: &mut Frame, area: Rect) {
+fn render_grid(app: &mut App, frame: &mut Frame, area: Rect) {
     let rows = Layout::vertical([Constraint::Fill(1); 3]).split(area);
 
     for (y, row) in rows.iter().enumerate() {
