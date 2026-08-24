@@ -1,26 +1,9 @@
 #[derive(Clone, Copy, Debug, Default)]
-
 pub enum SlotState {
     P1,
     P2,
     #[default]
     Empty
-}
-
-impl std::fmt::Display for SlotState {
-
-    fn fmt(&self, f : &mut std::fmt::Formatter) -> std::fmt::Result {
-
-        let result = match self {
-            SlotState::P1 => "Filled p1",
-            SlotState::P2 => "Filled p2",
-            SlotState::Empty => "Empty"
-        };
-
-        write!(f, "{}", result)
-        
-    }
-
 }
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -44,11 +27,8 @@ impl Slot {
     pub fn tick_life(&mut self) {
        
         match self.state {
-
-            SlotState::P1 => self.life -= 1,
-            SlotState::P2 => self.life -= 1,
-            SlotState::Empty => {}
-
+            SlotState::P1 | SlotState::P2=> self.life -= 1,
+            _ => {}
         }
 
         if self.life == 0 {
@@ -63,7 +43,7 @@ impl Slot {
             SlotState::P1 | SlotState::P2 => false, 
             SlotState::Empty => {
                 self.state = new_state;
-                self.life = 3;
+                self.life = 7;
                 true
             }
 
