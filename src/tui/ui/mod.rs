@@ -19,9 +19,9 @@ fn render_header(app: &mut App, frame: &mut Frame, area: Rect) {
     frame.render_widget(Paragraph::new(
         format!("
             Press 'Esc' to quit
-            Press arrow keys or 'hjkl' to move and 'space' to mark
+            Arrow keys and enter for P1, Wasd and space for P2
             Current Turn: {}
-            Move Count  : {}
+            Total Move Count  : {}
             ", 
             app.board.curr_turn, app.board.total_moves
         )).block(

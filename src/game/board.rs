@@ -60,9 +60,14 @@ impl Point {
         }
         self.y -= val;
     }
+
+    pub fn reset(&mut self) {
+        self.x = 0;
+        self.y = 0;
+    }
 }
 
-#[derive(Clone, Copy, Debug, Default)]  
+#[derive(Clone, Copy, Debug, Default, PartialEq)]  
 pub enum Player {
     #[default]
     P1,
@@ -101,7 +106,8 @@ pub struct Board {
     pub total_moves  : usize,
     pub curr_turn    : Player,
     pub display_life : bool,
-    pub board        : Vec<Vec<slot::Slot>>
+    pub board        : Vec<Vec<slot::Slot>>,
+    pub did_win      : bool
 }
 
 impl std::default::Default for Board {
@@ -110,8 +116,9 @@ impl std::default::Default for Board {
         let curr_turn = Player::P1;
         let total_moves = 0;
         let display_life = false;
+        let did_win = false;
 
-        Self{ total_moves, curr_turn ,display_life, board }
+        Self{ total_moves, curr_turn ,display_life, board , did_win}
     }
 }
 
@@ -123,8 +130,9 @@ impl Board {
         let curr_turn = Player::P1;
         let total_moves = 0;
         let display_life = display_life.unwrap_or(false);
+        let did_win = false;
 
-        Self{ total_moves, curr_turn ,display_life, board }
+        Self{ total_moves, curr_turn ,display_life, board , did_win}
 
     }
 
@@ -134,14 +142,19 @@ impl Board {
         let ret = self.at_point(point).mark_slot(new_state);
 
         if ret {
+
+        self.total_moves += 1;
+
+        if self.total_moves >= 5 {
+            Self::calc_win(self);    
+        } 
+
         self.next_turn();
         }
     }
 
     fn next_turn(&mut self) {
         
-        self.total_moves += 1;
-
         match self.curr_turn {
             Player::P1 => self.curr_turn = Player::P2,          
             Player::P2 => self.curr_turn = Player::P1,
@@ -153,9 +166,6 @@ impl Board {
             });
         });
 
-        if self.total_moves >= 5 {
-            Self::calc_win(self);    
-        } 
 
     }
 
@@ -169,13 +179,34 @@ impl Board {
 
     fn calc_win(&mut self) {
 
-    // coudl do some cool match shit so ill wait   
+        // Slots carrying their point info would make this a lot simpler
 
-    // // print winnter
-    //     println!("{} wins!", self.curr_turn);
-    // // restart game
-    //     Self::reset(self);
+        let player_win = {
 
+            let mut x_vec = vec![];
+            let mut y_vec = vec![];
+
+            for (y, vec) in self.board.iter().enumerate() {
+                    for (x, slot) in vec.iter().enumerate() {
+                     if slot.get_state() == self.curr_turn.to_slotstate() {
+                        y_vec.push(x);
+                        x_vec.push(y);
+                    }
+                }
+            }
+
+            x_vec.sort_unstable();
+            y_vec.sort_unstable();
+
+            (x_vec[1] - x_vec[0]) == (x_vec[2] - x_vec[1]) && x_vec[0] != x_vec[2]
+                                            ||
+            (y_vec[1] - y_vec[0]) == (y_vec[2] - y_vec[1]) && y_vec[0] != y_vec[2]
+        };
+
+        if player_win {
+            self.did_win = true;
+        }
+   
     }
 
     fn at_point(&mut self, point: &Point) -> &mut Slot {    

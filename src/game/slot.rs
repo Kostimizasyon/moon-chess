@@ -1,4 +1,4 @@
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub enum SlotState {
     P1,
     P2,
