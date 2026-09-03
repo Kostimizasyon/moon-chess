@@ -46,11 +46,12 @@ pub fn move_cursor(&mut self, direction: Direction, input_info: &Player) {
     };
 }
 
-// hacky way also kidna funny so ill keep it for now
+// hacky way also kinda funny so ill keep it for now
 pub fn place_mark(&mut self, input_info: &Player) {
     if self.board.curr_turn != *input_info {
         return;
     }
+
     if self.pending_reset {
         self.pending_reset = false;
         sleep(Duration::from_secs(1));

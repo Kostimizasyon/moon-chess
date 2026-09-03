@@ -137,11 +137,14 @@ impl Board {
     }
 
     pub fn mark_coords(&mut self, point : &Point) {
+        
         let new_state = self.curr_turn.to_slotstate();
 
-        let ret = self.at_point(point).mark_slot(new_state);
+        let res = self.at_point(point).mark_slot(new_state);
 
-        if ret {
+        if res {
+
+        self.tick_board();
 
         self.total_moves += 1;
 
@@ -150,7 +153,16 @@ impl Board {
         } 
 
         self.next_turn();
+
         }
+    }
+
+    fn tick_board(&mut self) {
+        self.board.iter_mut().for_each(|row| {
+            row.iter_mut().for_each(|cell| {
+                cell.tick_life();
+            });
+        });
     }
 
     fn next_turn(&mut self) {
@@ -159,13 +171,6 @@ impl Board {
             Player::P1 => self.curr_turn = Player::P2,          
             Player::P2 => self.curr_turn = Player::P1,
         }
-
-        self.board.iter_mut().for_each(|row| {
-            row.iter_mut().for_each(|cell| {
-                cell.tick_life();
-            });
-        });
-
 
     }
 
@@ -177,37 +182,32 @@ impl Board {
         *self = Self::new(None);
     }
 
-    fn calc_win(&mut self) {
+fn calc_win(&mut self) {
 
-        // Slots carrying their point info would make this a lot simpler
+    let player_win = {
 
-        let player_win = {
+    let mut vec_x = vec![];
+    let mut vec_y= vec![];
 
-            let mut x_vec = vec![];
-            let mut y_vec = vec![];
-
-            for (y, vec) in self.board.iter().enumerate() {
-                    for (x, slot) in vec.iter().enumerate() {
-                     if slot.get_state() == self.curr_turn.to_slotstate() {
-                        y_vec.push(x);
-                        x_vec.push(y);
-                    }
-                }
+    for (y, row) in self.board.iter().enumerate() {
+        for (x, slot) in row.iter().enumerate() {
+            if slot.get_state() == self.curr_turn.to_slotstate() {
+                    vec_x.push(x as isize);
+                    vec_y.push(y as isize);
             }
-
-            x_vec.sort_unstable();
-            y_vec.sort_unstable();
-
-            (x_vec[1] - x_vec[0]) == (x_vec[2] - x_vec[1]) && x_vec[0] != x_vec[2]
-                                            ||
-            (y_vec[1] - y_vec[0]) == (y_vec[2] - y_vec[1]) && y_vec[0] != y_vec[2]
-        };
-
-        if player_win {
-            self.did_win = true;
         }
-   
     }
+
+    let x_is_arithmetic = vec_x[1]  - vec_x[0]  == vec_x[2]  - vec_x[1];
+    let y_is_arithmetic = vec_y[1]  - vec_y[0]  == vec_y[2]  - vec_y[1];
+
+    x_is_arithmetic && y_is_arithmetic
+
+};
+    if player_win {
+        self.did_win = true;
+    }
+}
 
     fn at_point(&mut self, point: &Point) -> &mut Slot {    
         let (x, y) = point.to_tuple();
